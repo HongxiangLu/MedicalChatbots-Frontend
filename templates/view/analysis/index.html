@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8"/>
+    <title>控制后台</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <link rel="stylesheet" href="/static/admin/css/other/analysis.css"/>
+    <link rel="stylesheet" href="/static/static/css/index.css" />
+</head>
+
+<body>
+<div class="pear-container">
+    <div class="layui-row layui-col-space10">
+        <div id="app" class="layui-col-xs10 layui-col-lg10">
+            <div class="center">
+                <div class="top" id="message">
+                    <!-- <div class="empty" v-if="flag"><img src="./img/empty.jpg"></div> -->
+                    <div class="left">
+                        <div class="web">
+                            <img src="/static/static/img/logo.jpg">
+                            <span>{(new Date().toLocaleString()-}</span>
+                            <p>你好，有什么问题可以咨询小康</p>
+                        </div>
+                    </div>
+                    <div class="question" v-for="p in users">
+                        <div class="right">
+                            <div class="user">
+                                <img :src="p.user_src">
+                                <span>{(p.user_date-}</span>
+                                <p>{(p.key-}</p>
+                            </div>
+                        </div>
+                        <div class="left">
+                            <div class="web">
+                                <img :src="p.web_src">
+                                <span>{(p.web_date-}</span>
+                                <p>{(p.answer-}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottom">
+                    <img class="simple" src="/static/static/img/shanchu.png" @click="deletes">
+                    <img class="simple" src="/static/static/img/xiazai.png">
+                    <img class="simple" src="/static/static/img/xiaoxi.png">
+                    <input type="text" placeholder="来说点什么吧..." v-model="key" @keyup="keyenter">
+                    <img src="/static/static/img/fasong-tijiao.png" class="fasong" @click="send">
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="layui-row layui-col-space10">
+    </div>
+</div>
+<script src="/static/static/js/vue.js"></script>
+<script src="/static/static/js/axios.min.js"></script>
+<script>
+    let app = new Vue({
+        el: "#app",
+        delimiters: ['{(', '-}'],
+        data() {
+            return {
+                users: [],
+                key: "",
+                flag: true
+            }
+        },
+        methods: {
+            send() {
+                let now = new Date()
+                let time = now.toLocaleString()
+                let params = {
+                    question: this.key
+                }
+                axios.post("http://127.0.0.1:8888/question", params).then((res) => {
+                    let end = new Date()
+                    let user = {
+                        user_src: "/static/static/img/user.jpg",
+                        key: this.key,
+                        user_date: time,
+                        web_src: "/static/static/img/logo.jpg",
+                        answer: res.data.answer,
+                        web_date: end.toLocaleString(),
+                    }
+                    this.users.push(user)
+                    this.key = ""
+                    let message = document.getElementById('message');
+                    message.scrollTop = message.scrollHeight;
+                })
+            },
+            deletes() {
+                if (confirm("是否清空对话")) {
+                    this.users = []
+                }
+            },
+            keyenter(e) {
+                if (e.keyCode == 13 && this.key != "") {
+                    let now = new Date()
+                    let time = now.toLocaleString()
+                    let params = {
+                        question: this.key
+                    }
+                    axios.post("http://localhost:8888/question", params).then((res) => {
+                        let end = new Date()
+                        let user = {
+                            user_src: "/static/static/img/user.jpg",
+                            key: this.key,
+                            user_date: time,
+                            web_src: "/static/static/img/logo.jpg",
+                            answer: res.data.answer,
+                            web_date: end.toLocaleString(),
+                        }
+                        this.users.push(user)
+                        this.key = ""
+                        let message = document.getElementById('message');
+                        message.scrollTop = message.scrollHeight;
+                    })
+                }
+            }
+        },
+    })
+</script>
+<script>
+    layui.use(["layer", "echarts", "element", "count"], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            element = layui.element,
+            count = layui.count,
+            echarts = layui.echarts;
+
+        count.up("value1", {
+            time: 4000,
+            num: 440.34,
+            bit: 2,
+            regulator: 50,
+        });
+
+        count.up("value2", {
+            time: 4000,
+            num: 236.3,
+            bit: 2,
+            regulator: 50,
+        });
+
+        count.up("value3", {
+            time: 4000,
+            num: 634.43,
+            bit: 2,
+            regulator: 50,
+        });
+
+        count.up("value4", {
+            time: 4000,
+            bit: 2,
+            num: 373.23,
+            regulator: 50,
+        });
+
+        var echartsRecords = echarts.init(
+            document.getElementById("echarts-records"),
+            "walden",
+        );
+
+        const colorList = [
+            "#9E87FF",
+            "#73DDFF",
+            "#fe9a8b",
+            "#F56948",
+            "#9E87FF",
+        ];
+        var option = {
+            xAxis: {
+                type: "category",
+                data: [
+                    "Mon",
+                    "Tue",
+                    "Wed",
+                    "Thu",
+                    "Fri",
+                    "Sat",
+                    "Sun",
+                    "Bai",
+                    "Fan",
+                    "Yue",
+                    "Qian",
+                ],
+                splitLine: false,
+            },
+            yAxis: {
+                type: "value",
+                splitLine: false,
+            },
+            grid: {
+                x: "50px",
+                y: "50px",
+                x2: "50px",
+                y2: "50px",
+            },
+            series: [
+                {
+                    data: [120, 200, 150, 80, 70, 110, 130, 50, 40, 70, 100],
+                    type: "bar",
+                    showBackground: true,
+                    backgroundStyle: {
+                        color: "rgba(180, 180, 180, 0.2)",
+                    },
+                    itemStyle: {
+                        normal: {
+                            color: "#16baaa",
+                        },
+                    },
+                },
+            ],
+        };
+        echartsRecords.setOption(option);
+
+        window.onresize = function () {
+            echartsRecords.resize();
+        };
+    });
+</script>
+</body>
+</html>
